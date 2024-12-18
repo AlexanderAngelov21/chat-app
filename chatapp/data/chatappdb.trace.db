@@ -1,0 +1,3 @@
+2024-12-18 22:59:14.259134+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]DESCRIBE messages"; expected "DELETE, DROP"; SQL statement:
+DESCRIBE messages [42001-232]

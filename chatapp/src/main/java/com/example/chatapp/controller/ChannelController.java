@@ -13,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -31,15 +33,26 @@ public class ChannelController {
         User owner = userRepository.findByIdAndIsActiveTrue(request.getOwnerId())
                 .orElseThrow(() -> new NoSuchElementException("Owner with ID " + request.getOwnerId() + " not found."));
 
+        // Create the channel
         Channel channel = Channel.builder()
                 .name(request.getChannelName())
                 .owner(owner)
                 .isActive(true)
                 .build();
-
         Channel savedChannel = channelRepository.save(channel);
+
+        // Add owner to ChannelMember table with role OWNER
+        ChannelMember ownerMember = ChannelMember.builder()
+                .channel(savedChannel)
+                .user(owner)
+                .role("OWNER")
+                .isActive(true)
+                .build();
+        channelMemberRepository.save(ownerMember);
+
         return new ResponseEntity<>(savedChannel, HttpStatus.CREATED);
     }
+
 
 
     // 2. List all active channels
@@ -144,4 +157,36 @@ public class ChannelController {
 
         return ResponseEntity.ok(updatedChannel);
     }
+    // 8. List all members of a channel
+    @GetMapping("/{channelId}/members")
+    public ResponseEntity<List<Map<String, Object>>> listChannelMembers(@PathVariable Long channelId) {
+        // Validate if the channel is active
+        Channel channel = channelRepository.findById(channelId)
+                .filter(Channel::isActive)
+                .orElseThrow(() -> new NoSuchElementException("Channel not found or is inactive."));
+
+        // Fetch active members of the channel
+        List<ChannelMember> members = channelMemberRepository.findByChannelIdAndIsActiveTrue(channelId);
+
+        if (members.isEmpty()) {
+            throw new NoSuchElementException("No members found for the given channel.");
+        }
+
+        // Transform to required response format
+        List<Map<String, Object>> memberDetails = members.stream()
+                .map(member -> {
+                    Map<String, Object> memberDetail = new HashMap<>();
+                    memberDetail.put("userId", member.getUser().getId());
+                    memberDetail.put("username", member.getUser().getUsername());
+                    memberDetail.put("email", member.getUser().getEmail());
+                    memberDetail.put("role", member.getRole());
+                    return memberDetail;
+                })
+                .toList();
+
+        return ResponseEntity.ok(memberDetails);
+    }
+
+
+
 }
