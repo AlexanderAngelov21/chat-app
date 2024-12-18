@@ -9,6 +9,10 @@ import com.example.chatapp.repository.MessageRepository;
 import com.example.chatapp.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,13 +56,21 @@ public class MessageController {
         return new ResponseEntity<>(messageRepository.save(message), HttpStatus.CREATED);
     }
 
-    // 2. Retrieve messages from a channel
+    // 2. Retrieve messages from a channel with pagination
     @GetMapping("/channel/{channelId}")
-    public ResponseEntity<List<Message>> getMessagesFromChannel(@PathVariable Long channelId) {
-        Channel channel = channelRepository.findById(channelId)
+    public ResponseEntity<Page<Message>> getMessagesFromChannel(
+            @PathVariable Long channelId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        // Validate channel
+        channelRepository.findById(channelId)
                 .filter(Channel::isActive)
                 .orElseThrow(() -> new NoSuchElementException("Channel not found or is inactive."));
-        List<Message> messages = messageRepository.findByChannelIdAndIsActiveTrueOrderByCreatedAtAsc(channelId);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+        Page<Message> messages = messageRepository.findByChannelIdAndIsActiveTrue(channelId, pageable);
+
         return ResponseEntity.ok(messages);
     }
 
@@ -86,13 +98,17 @@ public class MessageController {
         return new ResponseEntity<>(messageRepository.save(message), HttpStatus.CREATED);
     }
 
-    // 4. Retrieve private messages
+    // 4. Retrieve private messages with pagination
     @GetMapping("/private")
-    public ResponseEntity<List<Message>> getPrivateMessages(
+    public ResponseEntity<Page<Message>> getPrivateMessages(
             @RequestParam Long senderId,
-            @RequestParam Long receiverId) {
+            @RequestParam Long receiverId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
-        List<Message> messages = messageRepository.findBySenderIdAndReceiverIdAndIsActiveTrueOrderByCreatedAtAsc(senderId, receiverId);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+        Page<Message> messages = messageRepository.findBySenderIdAndReceiverIdAndIsActiveTrue(senderId, receiverId, pageable);
+
         return ResponseEntity.ok(messages);
     }
     // 5. Update a message
@@ -152,4 +168,5 @@ public class MessageController {
 
         return ResponseEntity.noContent().build();
     }
+
 }

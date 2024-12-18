@@ -85,26 +85,45 @@ public class ChannelController {
     }
     // 5. Add a user to a channel
     @PostMapping("/{channelId}/addUser")
-    public ResponseEntity<String> addUserToChannel(@PathVariable Long channelId, @RequestParam Long userId) {
+    public ResponseEntity<String> addUserToChannel(
+            @PathVariable Long channelId,
+            @RequestParam Long actorId,
+            @RequestParam Long userId) {
+
         // Validate that the channel is active
         Channel channel = channelRepository.findById(channelId)
                 .filter(Channel::isActive)
                 .orElseThrow(() -> new NoSuchElementException("Channel not found or is inactive."));
 
-        // Validate that the user is active
-        User user = userRepository.findByIdAndIsActiveTrue(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found."));
+        // Validate that the actor is authorized (owner or admin)
+        boolean isOwner = channel.getOwner().getId().equals(actorId);
+        boolean isAdmin = channelMemberRepository.findByChannelIdAndUserIdAndIsActiveTrue(channelId, actorId)
+                .map(member -> member.getRole().equals("ADMIN"))
+                .orElse(false);
 
-        // Add user as a MEMBER by default
+        if (!isOwner && !isAdmin) {
+            throw new IllegalArgumentException("Only the channel owner or an admin can add members to this channel.");
+        }
+
+        // Validate the user to be added
+        User user = userRepository.findByIdAndIsActiveTrue(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found or is inactive."));
+
+        // Check if the user is already a member
+        if (channelMemberRepository.findByChannelIdAndUserIdAndIsActiveTrue(channelId, userId).isPresent()) {
+            throw new IllegalArgumentException("User is already a member of this channel.");
+        }
+
+        // Add user as a MEMBER
         ChannelMember member = ChannelMember.builder()
                 .channel(channel)
                 .user(user)
                 .role("MEMBER")
                 .isActive(true)
                 .build();
-        channelMemberRepository.save(member);
 
-        return ResponseEntity.ok("User added to channel successfully.");
+        channelMemberRepository.save(member);
+        return ResponseEntity.ok("User added to the channel successfully.");
     }
 
     // 6. Assign ADMIN role
@@ -186,7 +205,42 @@ public class ChannelController {
 
         return ResponseEntity.ok(memberDetails);
     }
+    // 9. Remove a user from a channel (only owner can remove)
+    @DeleteMapping("/{channelId}/removeUser")
+    public ResponseEntity<String> removeMemberFromChannel(
+            @PathVariable Long channelId,
+            @RequestParam Long actorId,
+            @RequestParam Long userId) {
 
+        // Validate channel
+        Channel channel = channelRepository.findById(channelId)
+                .filter(Channel::isActive)
+                .orElseThrow(() -> new NoSuchElementException("Channel not found or is inactive."));
 
+        // Validate actor (owner or admin)
+        boolean isOwner = channel.getOwner().getId().equals(actorId);
+        boolean isAdmin = channelMemberRepository.findByChannelIdAndUserIdAndIsActiveTrue(channelId, actorId)
+                .map(member -> member.getRole().equals("ADMIN"))
+                .orElse(false);
+
+        if (!isOwner && !isAdmin) {
+            throw new IllegalArgumentException("Only the channel owner or an admin can remove members.");
+        }
+
+        // Validate member to remove
+        ChannelMember member = channelMemberRepository.findByChannelIdAndUserIdAndIsActiveTrue(channelId, userId)
+                .orElseThrow(() -> new NoSuchElementException("User is not a member of this channel."));
+
+        // Only owner can remove an admin
+        if (member.getRole().equals("ADMIN") && !isOwner) {
+            throw new IllegalArgumentException("Only the channel owner can remove an admin.");
+        }
+
+        // Soft delete the member
+        member.setActive(false);
+        channelMemberRepository.save(member);
+
+        return ResponseEntity.ok("User removed from the channel successfully.");
+    }
 
 }

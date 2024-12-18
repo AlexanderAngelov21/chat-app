@@ -1,6 +1,8 @@
 package com.example.chatapp.repository;
 
 import com.example.chatapp.model.Message;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,4 +19,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     // Fetch messages sent by a specific user in a channel
     List<Message> findByChannelIdAndSenderIdAndIsActiveTrueOrderByCreatedAtAsc(Long channelId, Long senderId);
+    Page<Message> findByChannelIdAndIsActiveTrue(Long channelId, Pageable pageable);
+    Page<Message> findBySenderIdAndReceiverIdAndIsActiveTrue(Long senderId, Long receiverId, Pageable pageable);
+
 }
