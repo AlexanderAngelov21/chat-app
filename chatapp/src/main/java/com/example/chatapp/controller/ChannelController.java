@@ -2,7 +2,9 @@ package com.example.chatapp.controller;
 
 import com.example.chatapp.dto.CreateChannelRequest;
 import com.example.chatapp.model.Channel;
+import com.example.chatapp.model.ChannelMember;
 import com.example.chatapp.model.User;
+import com.example.chatapp.repository.ChannelMemberRepository;
 import com.example.chatapp.repository.ChannelRepository;
 import com.example.chatapp.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -21,7 +23,7 @@ public class ChannelController {
 
     private final ChannelRepository channelRepository;
     private final UserRepository userRepository;
-
+    private final ChannelMemberRepository channelMemberRepository;
     // 1. Create a new channel
 
     @PostMapping
@@ -67,5 +69,79 @@ public class ChannelController {
     public ResponseEntity<List<Channel>> getChannelsByOwner(@PathVariable Long ownerId) {
         List<Channel> channels = channelRepository.findByOwnerIdAndIsActiveTrue(ownerId);
         return ResponseEntity.ok(channels);
+    }
+    // 5. Add a user to a channel
+    @PostMapping("/{channelId}/addUser")
+    public ResponseEntity<String> addUserToChannel(@PathVariable Long channelId, @RequestParam Long userId) {
+        // Validate that the channel is active
+        Channel channel = channelRepository.findById(channelId)
+                .filter(Channel::isActive)
+                .orElseThrow(() -> new NoSuchElementException("Channel not found or is inactive."));
+
+        // Validate that the user is active
+        User user = userRepository.findByIdAndIsActiveTrue(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found."));
+
+        // Add user as a MEMBER by default
+        ChannelMember member = ChannelMember.builder()
+                .channel(channel)
+                .user(user)
+                .role("MEMBER")
+                .isActive(true)
+                .build();
+        channelMemberRepository.save(member);
+
+        return ResponseEntity.ok("User added to channel successfully.");
+    }
+
+    // 6. Assign ADMIN role
+    @PutMapping("/{channelId}/assignAdmin")
+    public ResponseEntity<String> assignAdminRole(
+            @PathVariable Long channelId,
+            @RequestParam Long ownerId,
+            @RequestParam Long userId) {
+
+        // Validate that the channel is active
+        Channel channel = channelRepository.findById(channelId)
+                .filter(Channel::isActive)
+                .orElseThrow(() -> new NoSuchElementException("Channel not found or is inactive."));
+        // Validate that the user is the owner
+        if (!channel.getOwner().getId().equals(ownerId)) {
+            throw new IllegalArgumentException("Only the owner can assign ADMIN roles.");
+        }
+
+        // Assign ADMIN role
+        ChannelMember member = channelMemberRepository.findByChannelIdAndUserIdAndIsActiveTrue(channelId, userId)
+                .orElseThrow(() -> new NoSuchElementException("User is not a member of this channel."));
+        member.setRole("ADMIN");
+        channelMemberRepository.save(member);
+
+        return ResponseEntity.ok("User assigned as ADMIN successfully.");
+    }
+    // 7. Update channel details (only owner or admin can update)
+    @PutMapping("/{channelId}/user/{userId}")
+    public ResponseEntity<Channel> updateChannel(
+            @PathVariable Long channelId,
+            @PathVariable Long userId,
+            @RequestParam String newName) {
+
+        Channel channel = channelRepository.findById(channelId).filter(Channel::isActive)
+                .orElseThrow(() -> new NoSuchElementException("Channel with ID " + channelId + " not found."));
+
+        // Check if the user is the owner or an admin
+        boolean isOwner = channel.getOwner().getId().equals(userId);
+        boolean isAdmin = channelMemberRepository.findByChannelIdAndUserIdAndIsActiveTrue(channelId, userId)
+                .map(member -> member.getRole().equals("ADMIN"))
+                .orElse(false);
+
+        if (!isOwner && !isAdmin) {
+            throw new IllegalArgumentException("Only the owner or an admin can update this channel.");
+        }
+
+        // Update the channel name
+        channel.setName(newName);
+        Channel updatedChannel = channelRepository.save(channel);
+
+        return ResponseEntity.ok(updatedChannel);
     }
 }
