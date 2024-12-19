@@ -1,5 +1,6 @@
 package com.example.chatapp.controller;
 
+import com.example.chatapp.dto.MessageRequest;
 import com.example.chatapp.model.Message;
 import com.example.chatapp.service.MessageService;
 import jakarta.validation.Valid;
@@ -61,6 +62,33 @@ public class MessageController {
             @PathVariable Long messageId,
             @RequestParam Long userId) {
         messageService.deleteMessage(messageId, userId);
+        return ResponseEntity.noContent().build();
+    }
+    @PostMapping("/friend")
+    public ResponseEntity<Message> sendMessageToFriend(
+            @Valid @RequestBody MessageRequest request) {
+        return ResponseEntity.ok(messageService.sendMessageToFriend(request.getSenderId(), request.getReceiverId(), request.getContent()));
+    }
+    @GetMapping("/friend")
+    public ResponseEntity<Page<Message>> getFriendMessages(
+            @RequestParam Long senderId,
+            @RequestParam Long receiverId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(messageService.getFriendMessages(senderId, receiverId, page, size));
+    }
+    @PutMapping("/friend/{messageId}")
+    public ResponseEntity<Message> updateFriendMessage(
+            @PathVariable Long messageId,
+            @Valid @RequestBody MessageRequest request) {
+        return ResponseEntity.ok(messageService.updateFriendMessage(messageId, request.getSenderId(), request.getContent()));
+    }
+
+    @DeleteMapping("/friend/{messageId}")
+    public ResponseEntity<Void> deleteFriendMessage(
+            @PathVariable Long messageId,
+            @RequestParam Long senderId) {
+        messageService.deleteFriendMessage(messageId, senderId);
         return ResponseEntity.noContent().build();
     }
 }
