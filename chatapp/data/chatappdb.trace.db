@@ -1,3 +1,14 @@
 2024-12-18 22:59:14.259134+02:00 jdbc[13]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]DESCRIBE messages"; expected "DELETE, DROP"; SQL statement:
 DESCRIBE messages [42001-232]
+2024-12-19 11:59:36.045943+02:00 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "FRIENDS" already exists; SQL statement:
+-- V2__Create_Friends_Table.sql
+
+CREATE TABLE friends (
+                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                         user_id BIGINT NOT NULL,
+                         friend_id BIGINT NOT NULL,
+                         is_active BOOLEAN NOT NULL DEFAULT TRUE,
+                         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+                         FOREIGN KEY (friend_id) REFEREN [42101-232]
