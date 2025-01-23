@@ -25,10 +25,21 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers(String searchQuery) {
+        if (searchQuery == null || searchQuery.isEmpty()) {
+
+            return userRepository.findAll()
+                    .stream()
+                    .filter(User::isActive)
+                    .toList();
+        }
+
+
         return userRepository.findAll()
                 .stream()
                 .filter(User::isActive)
+                .filter(user -> user.getUsername().toLowerCase().contains(searchQuery.toLowerCase()) ||
+                        user.getEmail().toLowerCase().contains(searchQuery.toLowerCase()))
                 .toList();
     }
 
@@ -37,10 +48,25 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found."));
     }
 
-    public User updateUser(Long id, User userDetails) {
+    public User updateUser(Long actorId,Long id, User userDetails) {
+        if (!actorId.equals(id)) {
+            throw new IllegalArgumentException("You are not authorized to update this user.");
+        }
         User existingUser = userRepository.findByIdAndIsActiveTrue(id)
                 .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found."));
 
+        if (userDetails.getUsername() != null &&
+                !userDetails.getUsername().equals(existingUser.getUsername()) &&
+                userRepository.findByUsernameAndIsActiveTrue(userDetails.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Username '" + userDetails.getUsername() + "' already exists.");
+        }
+
+
+        if (userDetails.getEmail() != null &&
+                !userDetails.getEmail().equals(existingUser.getEmail()) &&
+                userRepository.findByEmailAndIsActiveTrue(userDetails.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email '" + userDetails.getEmail() + "' already exists.");
+        }
         existingUser.setUsername(userDetails.getUsername() != null ? userDetails.getUsername() : existingUser.getUsername());
         existingUser.setEmail(userDetails.getEmail() != null ? userDetails.getEmail() : existingUser.getEmail());
         existingUser.setPassword(userDetails.getPassword() != null ? userDetails.getPassword() : existingUser.getPassword());
@@ -48,7 +74,10 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
-    public void deleteUser(Long id) {
+    public void deleteUser(Long actorId,Long id) {
+        if (!actorId.equals(id)) {
+            throw new IllegalArgumentException("You are not authorized to delete this user.");
+        }
         User existingUser = userRepository.findByIdAndIsActiveTrue(id)
                 .orElseThrow(() -> new NoSuchElementException("User with ID " + id + " not found."));
         existingUser.setActive(false);

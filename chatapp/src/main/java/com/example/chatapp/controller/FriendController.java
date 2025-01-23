@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/friends")
@@ -18,9 +19,10 @@ public class FriendController {
 
     // 1. Add a friend
     @PostMapping
-    public ResponseEntity<String> addFriend(@RequestBody AddFriendRequest request) {
+    public ResponseEntity<Map<String, String>> addFriend(@RequestBody AddFriendRequest request) {
         friendService.addFriend(request.getUserId(), request.getFriendId());
-        return ResponseEntity.ok("Friend added successfully.");
+        Map<String, String> response = Map.of("message", "Friend added successfully.");
+        return ResponseEntity.ok(response);
     }
 
     // 2. Get all friends for a user

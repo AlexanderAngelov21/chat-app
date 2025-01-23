@@ -25,6 +25,7 @@ public class MessageService {
 
     public Message sendMessageToChannel(Long channelId, Long senderId, String content) {
         User sender = userRepository.findByIdAndIsActiveTrue(senderId)
+                .filter(User::isActive)
                 .orElseThrow(() -> new NoSuchElementException("Sender not found."));
 
         Channel channel = channelRepository.findById(channelId)
@@ -147,7 +148,7 @@ public class MessageService {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-        return messageRepository.findBySenderIdAndReceiverIdAndIsActiveTrue(senderId, receiverId, pageable);
+        return messageRepository.findMessagesBetweenUsers(senderId, receiverId, pageable);
     }
     public Message updateFriendMessage(Long messageId, Long senderId, String newContent) {
         Message message = messageRepository.findById(messageId)

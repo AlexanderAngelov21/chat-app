@@ -40,13 +40,17 @@ public class ChannelController {
     }
 
     @PostMapping("/{channelId}/addUser")
-    public ResponseEntity<String> addUserToChannel(@PathVariable Long channelId, @RequestParam Long actorId, @RequestParam Long userId) {
-        return ResponseEntity.ok(channelService.addUserToChannel(channelId, actorId, userId));
+    public ResponseEntity<Map<String, String>> addUserToChannel(@PathVariable Long channelId, @RequestParam Long actorId, @RequestParam Long userId) {
+        String resultMessage = channelService.addUserToChannel(channelId, actorId, userId);
+        Map<String, String> response = Map.of("message", resultMessage);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{channelId}/assignAdmin")
-    public ResponseEntity<String> assignAdminRole(@PathVariable Long channelId, @RequestParam Long ownerId, @RequestParam Long userId) {
-        return ResponseEntity.ok(channelService.assignAdminRole(channelId, ownerId, userId));
+    public ResponseEntity<Map<String, String>> assignAdminRole(@PathVariable Long channelId, @RequestParam Long ownerId, @RequestParam Long userId) {
+        String resultMessage = channelService.assignAdminRole(channelId, ownerId, userId);
+        Map<String, String> response = Map.of("message", resultMessage);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{channelId}/user/{userId}")
@@ -60,7 +64,20 @@ public class ChannelController {
     }
 
     @DeleteMapping("/{channelId}/removeUser")
-    public ResponseEntity<String> removeMemberFromChannel(@PathVariable Long channelId, @RequestParam Long actorId, @RequestParam Long userId) {
-        return ResponseEntity.ok(channelService.removeMemberFromChannel(channelId, actorId, userId));
+    public ResponseEntity<Map<String, String>> removeMemberFromChannel(@PathVariable Long channelId, @RequestParam Long actorId, @RequestParam Long userId) {
+        String resultMessage = channelService.removeMemberFromChannel(channelId, actorId, userId);
+        Map<String, String> response = Map.of("message", resultMessage);
+        return ResponseEntity.ok(response);
     }
+    @GetMapping("/user/{userId}/channels")
+    public ResponseEntity<List<Channel>> getUserChannels(@PathVariable Long userId) {
+        List<Channel> userChannels = channelService.getUserChannels(userId);
+        return ResponseEntity.ok(userChannels);
+    }
+    @GetMapping("/{channelId}/user/{userId}/role")
+    public ResponseEntity<Map<String, String>> getUserRole(@PathVariable Long channelId, @PathVariable Long userId) {
+        String role = channelService.getUserRoleInChannel(channelId, userId);
+        return ResponseEntity.ok(Map.of("role", role));
+    }
+
 }

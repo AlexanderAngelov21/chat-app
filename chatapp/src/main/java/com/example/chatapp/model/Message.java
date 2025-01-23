@@ -2,6 +2,7 @@ package com.example.chatapp.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -36,6 +37,7 @@ public class Message {
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 
+    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 }

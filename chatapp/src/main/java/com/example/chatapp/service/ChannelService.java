@@ -180,4 +180,18 @@ public class ChannelService {
 
         return "User removed from the channel successfully.";
     }
+    public List<Channel> getUserChannels(Long userId) {
+        return channelMemberRepository.findByUserIdAndIsActiveTrue(userId)
+                .stream()
+                .map(ChannelMember::getChannel)
+                .filter(Channel::isActive)
+                .toList();
+    }
+    public String getUserRoleInChannel(Long channelId, Long userId) {
+        return channelMemberRepository.findByChannelIdAndUserIdAndIsActiveTrue(channelId, userId)
+                .map(ChannelMember::getRole)
+                .orElseThrow(() -> new NoSuchElementException("User is not a member of this channel."));
+    }
+
+
 }

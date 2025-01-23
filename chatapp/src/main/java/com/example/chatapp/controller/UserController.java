@@ -22,8 +22,9 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<List<User>> getAllUsers(@RequestParam(required = false) String search) {
+        List<User> users = userService.getAllUsers(search);
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
@@ -32,13 +33,19 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User userDetails) {
-        return ResponseEntity.ok(userService.updateUser(id, userDetails));
+    public ResponseEntity<User> updateUser(
+            @PathVariable Long id,
+            @RequestHeader("actorId") Long actorId,
+            @Valid @RequestBody User userDetails) {
+        User updatedUser = userService.updateUser(actorId, id, userDetails);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable Long id,
+            @RequestHeader("actorId") Long actorId) {
+        userService.deleteUser(actorId, id);
         return ResponseEntity.noContent().build();
     }
 }

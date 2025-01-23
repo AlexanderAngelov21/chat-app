@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface ChannelMemberRepository extends JpaRepository<ChannelMember, Long> {
     List<ChannelMember> findByChannelIdAndIsActiveTrue(Long channelId);
-
+    List<ChannelMember> findByUserIdAndIsActiveTrue(Long userId);
     Optional<ChannelMember> findByChannelIdAndUserIdAndIsActiveTrue(Long channelId, Long userId);
 }
