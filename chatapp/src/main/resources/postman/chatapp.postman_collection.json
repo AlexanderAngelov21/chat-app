@@ -1,0 +1,757 @@
+{
+	"info": {
+		"_postman_id": "8feddd56-2802-44e6-975d-89717232ec73",
+		"name": "chatapp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "30280118"
+	},
+	"item": [
+		{
+			"name": "User tests",
+			"item": [
+				{
+					"name": "Update user info",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "actorId",
+								"value": "12",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"john_updated2345\",\r\n    \"email\": \"john_updated23445@example.com\",\r\n    \"password\": \"newpassword123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/9"
+					},
+					"response": []
+				},
+				{
+					"name": "Soft delete user",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "actorId",
+								"value": "24",
+								"type": "text"
+							}
+						],
+						"url": "http://localhost:8080/api/users/24"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/users/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Create a User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"john_doe23345y\",\r\n    \"email\": \"email@bg.bg\",\r\n    \"password\": \"securepasswordy\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Active Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/users"
+					},
+					"response": []
+				},
+				{
+					"name": "Login user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"dasddas\",\r\n  \"password\": \"zatest213\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "Register user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"1231231231313dasdasdasdas\",\r\n  \"email\":\"123@1233.bgbssss\",\r\n  \"password\": \"zatest213\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/auth/register"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Channel tests",
+			"item": [
+				{
+					"name": "Create a New Channel",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"channelName\": \"generals\",\r\n    \"ownerId\": 27\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/channels"
+					},
+					"response": []
+				},
+				{
+					"name": "List All Active Channels",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/channels"
+					},
+					"response": []
+				},
+				{
+					"name": "Soft Delete a Channel",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/api/channels/2/owner/2"
+					},
+					"response": []
+				},
+				{
+					"name": "List Channels by Owner",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/channels/owner/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Add User to Channel",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/channels/4/addUser?actorId=2&userId=8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"channels",
+								"4",
+								"addUser"
+							],
+							"query": [
+								{
+									"key": "actorId",
+									"value": "2"
+								},
+								{
+									"key": "userId",
+									"value": "8"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Admin Role",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/channels/4/assignAdmin?ownerId=2&userId=8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"channels",
+								"4",
+								"assignAdmin"
+							],
+							"query": [
+								{
+									"key": "ownerId",
+									"value": "2"
+								},
+								{
+									"key": "userId",
+									"value": "8"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Channel",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/channels/4/user/7?newName=streamss",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"channels",
+								"4",
+								"user",
+								"7"
+							],
+							"query": [
+								{
+									"key": "newName",
+									"value": "streamss"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List channel members",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/channels/4/members"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete member from channel",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/channels/3/removeUser?actorId=6&userId=8\n",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"channels",
+								"3",
+								"removeUser"
+							],
+							"query": [
+								{
+									"key": "actorId",
+									"value": "6"
+								},
+								{
+									"key": "userId",
+									"value": "8\n"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List channels a user is member of",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/channels/user/20/channels"
+					},
+					"response": []
+				},
+				{
+					"name": "Get channel member role",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Message tests",
+			"item": [
+				{
+					"name": "Send a Message to a Channel",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"Hello guys!!!\"",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/messages/channel/8?senderId=27",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"messages",
+								"channel",
+								"8"
+							],
+							"query": [
+								{
+									"key": "senderId",
+									"value": "27"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Messages from a Channel",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/messages/channel/4"
+					},
+					"response": []
+				},
+				{
+					"name": "Send a Private Message",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"Hey, how are you?\"\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/messages/private?senderId=2&receiverId=8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"messages",
+								"private"
+							],
+							"query": [
+								{
+									"key": "senderId",
+									"value": "2"
+								},
+								{
+									"key": "receiverId",
+									"value": "8"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Private Messages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/messages/private?senderId=2&receiverId=8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"messages",
+								"private"
+							],
+							"query": [
+								{
+									"key": "senderId",
+									"value": "2"
+								},
+								{
+									"key": "receiverId",
+									"value": "8"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Message",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"Updated message content\"",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/messages/9?userId=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"messages",
+								"9"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Message",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/messages/9?userId=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"messages",
+								"9"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Channel Messages with Pagination",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/messages/channel/4?page=0&size=5\n",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"messages",
+								"channel",
+								"4"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "5\n"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Private Messages with Pagination",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/messages/private?senderId=2&receiverId=8&page=0&size=5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"messages",
+								"private"
+							],
+							"query": [
+								{
+									"key": "senderId",
+									"value": "2"
+								},
+								{
+									"key": "receiverId",
+									"value": "8"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Friends tests",
+			"item": [
+				{
+					"name": "Add a Friend",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\": 23,\r\n    \"friendId\": 27,\r\n    \"active\":false\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/friends"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Friends",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/friends/23"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Friend",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/friends?userId=23&friendId=27",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"friends"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "23"
+								},
+								{
+									"key": "friendId",
+									"value": "27"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send a Message to a Friend",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"senderId\": 23,\r\n    \"receiverId\": 27,\r\n    \"content\": \"Hello, how are you?22\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/messages/friend"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete friend message",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/messages/friend/11?senderId=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"messages",
+								"friend",
+								"11"
+							],
+							"query": [
+								{
+									"key": "senderId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Friend Message",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"senderId\": 7,\r\n  \"content\": \"This is an updated message!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/messages/friend/12"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Friend Messages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/messages/friend?senderId=23&receiverId=27&page=0&size=10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"messages",
+								"friend"
+							],
+							"query": [
+								{
+									"key": "senderId",
+									"value": "23"
+								},
+								{
+									"key": "receiverId",
+									"value": "27"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
