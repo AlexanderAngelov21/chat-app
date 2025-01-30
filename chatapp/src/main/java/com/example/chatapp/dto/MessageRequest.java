@@ -9,7 +9,7 @@ public class MessageRequest {
     @NotNull(message = "Sender ID is required")
     private Long senderId;
 
-    private Long receiverId; // Optional for channel messages
+    private Long receiverId;
 
     @NotBlank(message = "Message content is required")
     private String content;

@@ -134,7 +134,27 @@ public class ChannelService {
         channel.setName(newName);
         return channelRepository.save(channel);
     }
+    public String removeAdminRole(Long channelId, Long ownerId, Long userId) {
+        Channel channel = channelRepository.findById(channelId)
+                .filter(Channel::isActive)
+                .orElseThrow(() -> new NoSuchElementException("Channel not found or is inactive."));
 
+        if (!channel.getOwner().getId().equals(ownerId)) {
+            throw new IllegalArgumentException("Only the owner can remove ADMIN roles.");
+        }
+
+        ChannelMember member = channelMemberRepository.findByChannelIdAndUserIdAndIsActiveTrue(channelId, userId)
+                .orElseThrow(() -> new NoSuchElementException("User is not a member of this channel."));
+
+        if (!"ADMIN".equalsIgnoreCase(member.getRole())) {
+            throw new IllegalArgumentException("User is not an ADMIN.");
+        }
+
+        member.setRole("MEMBER");
+        channelMemberRepository.save(member);
+
+        return "Admin role removed successfully.";
+    }
     public List<Map<String, Object>> listChannelMembers(Long channelId) {
         Channel channel = channelRepository.findById(channelId)
                 .filter(Channel::isActive)

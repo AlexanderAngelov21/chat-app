@@ -52,7 +52,11 @@ public class ChannelController {
         Map<String, String> response = Map.of("message", resultMessage);
         return ResponseEntity.ok(response);
     }
-
+    @PostMapping("/{channelId}/remove-admin/{userId}")
+    public ResponseEntity<String> removeAdmin(@PathVariable Long channelId, @RequestParam Long ownerId, @PathVariable Long userId) {
+        String message = channelService.removeAdminRole(channelId, ownerId, userId);
+        return ResponseEntity.ok(message);
+    }
     @PutMapping("/{channelId}/user/{userId}")
     public ResponseEntity<Channel> updateChannel(@PathVariable Long channelId, @PathVariable Long userId, @RequestParam String newName) {
         return ResponseEntity.ok(channelService.updateChannel(channelId, userId, newName));
